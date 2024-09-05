@@ -17,7 +17,7 @@ import java.util.Date;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({MethodArgumentNotValidException.class, InvalidDataException.class, BadCredentialsException.class})
+    @ExceptionHandler({MethodArgumentNotValidException.class, InvalidDataException.class, BadCredentialsException.class, ResourceNotFoundException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionResponse handleValidException(Exception ex, WebRequest request) {
         ExceptionResponse response = new ExceptionResponse();
@@ -35,6 +35,8 @@ public class GlobalExceptionHandler {
             response.setError("Payload invalid");
         } else if (ex instanceof BadCredentialsException) {
             response.setError("Bad credentials");
+        }else if (ex instanceof ResourceNotFoundException) {
+            response.setError("Resource not found");
         }
         response.setMessage(message);
         return response;

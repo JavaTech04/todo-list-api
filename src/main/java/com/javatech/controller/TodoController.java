@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
+@RequestMapping("/api/${api.version}/todo")
 @Tag(name = "Todo Controller", description = "Handles operations related to todo items, including creating, updating, retrieving, and deleting todo items.")
 public class TodoController {
     private final TodoService todoService;
@@ -36,10 +37,10 @@ public class TodoController {
     ResponseData<?> createTodo(@Valid @RequestBody TodoRequest request) {
         try {
             log.info("Creating todo item: {}", request);
-            return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("common.success"), this.todoService.createTodo(request));
+            return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("todo.success.createTodo"), this.todoService.createTodo(request));
         } catch (Exception e) {
             log.error("Error creating todo item: request={}, errorMessage={}", request, e.getMessage(), e);
-            return new ResponseError<>(HttpStatus.OK.value(), Translator.toLocale("common.error"));
+            return new ResponseError<>(HttpStatus.OK.value(), Translator.toLocale("todo.error.createTodo"));
         }
     }
 
@@ -60,10 +61,10 @@ public class TodoController {
         try {
             log.info("Updating todo item with id={} and request={}", id, request);
             this.todoService.updateTodo(id, request);
-            return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("common.success"));
+            return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("todo.success.updateTodo"));
         } catch (Exception e) {
             log.error("Error updating todo item: id={}, request={}, errorMessage={}", id, request, e.getMessage(), e);
-            return new ResponseError<>(HttpStatus.OK.value(), Translator.toLocale("common.error"));
+            return new ResponseError<>(HttpStatus.OK.value(), Translator.toLocale("todo.error.updateTodo"));
         }
     }
 
@@ -79,10 +80,10 @@ public class TodoController {
         try {
             log.info("Deleting todo item with id={}", id);
             this.todoService.deleteTodo(id);
-            return new ResponseData<>(HttpStatus.NO_CONTENT.value(), Translator.toLocale("common.success"));
+            return new ResponseData<>(HttpStatus.NO_CONTENT.value(), Translator.toLocale("todo.success.deleteTodo"));
         } catch (Exception e) {
             log.error("Error deleting todo item: id={}, errorMessage={}", id, e.getMessage(), e);
-            return new ResponseError<>(HttpStatus.OK.value(), Translator.toLocale("common.error"));
+            return new ResponseError<>(HttpStatus.OK.value(), Translator.toLocale("todo.error.deleteTodo"));
         }
     }
 
@@ -97,10 +98,10 @@ public class TodoController {
     public ResponseData<?> getTodosByList(@PathVariable int listId) {
         try {
             log.info("Retrieving todos for list id={}", listId);
-            return new ResponseData<>(HttpStatus.NO_CONTENT.value(), Translator.toLocale("common.success"), this.todoService.getTodosByList(listId));
+            return new ResponseData<>(HttpStatus.NO_CONTENT.value(), Translator.toLocale("todo.success.getTodosByList"), this.todoService.getTodosByList(listId));
         } catch (Exception e) {
             log.error("Error retrieving todos for list id={}, errorMessage={}", listId, e.getMessage(), e);
-            return new ResponseError<>(HttpStatus.OK.value(), Translator.toLocale("common.error"));
+            return new ResponseError<>(HttpStatus.OK.value(), Translator.toLocale("todo.error.getTodosByList"));
         }
     }
 }
