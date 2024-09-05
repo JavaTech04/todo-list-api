@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/todo-lists")
+@RequestMapping("/api/${api.version}/todo-lists")
 public class TodoListController {
     private final TodoListService todoListService;
 

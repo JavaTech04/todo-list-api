@@ -1,6 +1,7 @@
 server:
   port: 2004
-
+api:
+  version: v1.0
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/todo_list_db
@@ -25,3 +26,17 @@ logging:
     root: INFO
     org.springframework.web: DEBUG
     org.hibernate: INFO
+jwt:
+  expiryHour: 1
+  expiryDay: 14
+  secretKey: b0238cff00a72de79bebabb5b5d6a777ff4b5f0401e6518ea03d48262f4bd818
+  refreshKey: 9106746cb1d349b31174dda29c2729d3448d9b8a57418cc1833c8478f0763980
+  resetKey: 9106746cb1d349b31174dda29c2729d3448d9b8a57418cc1833c8478f0763980
+openapi:
+  service:
+    api-docs: api-service
+    title: Todo List API
+    version: ${api.version}
+    description: This project is a simple yet powerful REST ful API for managing user lists, to-do lists and tasks.
+    server: http://localhost:2004
+    serverName: dev

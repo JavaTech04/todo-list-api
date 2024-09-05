@@ -2,12 +2,12 @@ package com.javatech.model;
 
 import com.javatech.utils.UserRole;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
@@ -18,6 +18,9 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "users")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class User extends AbstractEntity<Long> implements Serializable, UserDetails {
     @Column(name = "username", nullable = false, length = 50)
     private String username;
@@ -35,7 +38,7 @@ public class User extends AbstractEntity<Long> implements Serializable, UserDeta
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
