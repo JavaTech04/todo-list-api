@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse getInfo() {
+    public UserResponse profile() {
         String username = this.tokenHeader.getUsername();
         var user = this.userRepository.findByUsername(username).orElseThrow(() -> new ResolutionException("User not found!"));
         return UserResponse.builder()

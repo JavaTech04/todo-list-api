@@ -29,7 +29,9 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 public class AppConfig {
 
-    private static final String[] WHITE_LIST = {"/auth/**"};
+    private String version;
+
+    private final String[] WHITE_LIST = {"/api/*/auth/**"};
 
     private final PreFilter preFilter;
 
@@ -59,8 +61,8 @@ public class AppConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request.requestMatchers(WHITE_LIST).permitAll()
-                        .requestMatchers("/user/**").authenticated()
                         .requestMatchers("/todo-lists/**").hasAnyAuthority(USER.name(), ADMIN.name())
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider()).addFilterBefore(preFilter, UsernamePasswordAuthenticationFilter.class);

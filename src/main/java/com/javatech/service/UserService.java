@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 public interface UserService {
     UserDetailsService userDetailsService();
 
-    UserResponse getInfo();
+    UserResponse profile();
 
     void changeEmail(String email);
 

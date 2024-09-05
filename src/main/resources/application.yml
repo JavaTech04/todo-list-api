@@ -1,7 +1,7 @@
 server:
   port: 2004
 api:
-  version: v1.0
+  version: v1
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/todo_list_db
@@ -34,9 +34,11 @@ jwt:
   resetKey: 9106746cb1d349b31174dda29c2729d3448d9b8a57418cc1833c8478f0763980
 openapi:
   service:
-    api-docs: api-service
+    api-docs: api-todo-list
     title: Todo List API
     version: ${api.version}
     description: This project is a simple yet powerful REST ful API for managing user lists, to-do lists and tasks.
     server: http://localhost:2004
-    serverName: dev
+    serverName: JavaTech
+    license: Apache 2.0
+    license-url: https://facebook.com/NongHoangVu04

@@ -30,14 +30,16 @@ public class OpenApiConfig {
             @Value("${openapi.service.version}") String version,
             @Value("${openapi.service.description}") String description,
             @Value("${openapi.service.server}") String serverUrl,
-            @Value("${openapi.service.serverName}") String serverName
+            @Value("${openapi.service.serverName}") String serverName,
+            @Value("${openapi.service.license}") String license,
+            @Value("${openapi.service.license-url}") String licenseUrl
     ) {
         return new OpenAPI()
                 .info(new Info()
                         .title(title)
                         .version(version)
                         .description(description)
-                        .license(new License().name("Apache 2.0").url("https://facebook.com/NongHoangVu04")))
+                        .license(new License().name(license).url(licenseUrl)))
                 .servers(List.of(new Server().url(serverUrl).description(serverName)))
                 .components(new Components().addSecuritySchemes(
                         "bearerAuth",

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/api/${api.version}/auth")
-@Tag(name = "Authentication controller", description = "Handle issues related to authentication")
+@Tag(name = "Authentication Controller", description = "Handles authentication-related operations such as login, logout, and token management.")
 @RequiredArgsConstructor
 public class AuthenticationController {
 
@@ -30,7 +30,10 @@ public class AuthenticationController {
     /**
      * @param request {'username': 'your_username', 'password': 'your_password', 'platform': 'WEB|ANDROID|IOS', 'deviceToken': 'your_deviceToken', 'version': 'your_version'}
      */
-    @Operation(summary = "Access token", description = "Enter a valid username and password to generate the access_token and refresh_token used to log in")
+    @Operation(
+            summary = "Generate Access and Refresh Tokens",
+            description = "Provide a valid username and password to generate an access_token and refresh_token for authentication"
+    )
     @PostMapping("/access")
     public ResponseData<?> access(@Valid @RequestBody SignInRequest request) {
         try {
@@ -45,7 +48,10 @@ public class AuthenticationController {
     /**
      * @param request Header: Authorization
      */
-    @Operation(summary = "Refresh token", description = "Receives a refresh_token and refreshes the access_token")
+    @Operation(
+            summary = "Refresh Access Token",
+            description = "Accepts a refresh_token and generates a new access_token."
+    )
     @PostMapping("/refresh")
     public ResponseData<?> refresh(HttpServletRequest request) {
         try {
@@ -60,7 +66,10 @@ public class AuthenticationController {
     /**
      * @param request Header: Authorization
      */
-    @Operation(summary = "Remove token", description = "Receives a refresh_token and remove access_token from database")
+    @Operation(
+            summary = "Logout and Remove Token",
+            description = "Accepts a refresh_token and removes the associated access_token from the database, effectively logging out the user."
+    )
     @PostMapping("/remove")
     public ResponseData<?> logout(HttpServletRequest request) {
         try {
@@ -71,13 +80,15 @@ public class AuthenticationController {
             log.error("errorMessage={}", e.getMessage(), e.getCause());
             return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), Translator.toLocale("auth.error.remove"));
         }
-
     }
 
     /**
      * @param request {'username': 'username', 'email': 'email', 'password': 'password', 'confirmPassword': 'confirmPassword'}
      */
-    @Operation(summary = "Sign up", description = "Register a new account with the role as user")
+    @Operation(
+            summary = "User Registration",
+            description = "Register a new account with the default role of 'user'."
+    )
     @PostMapping("/sign-up")
     public ResponseData<?> signup(@Valid @RequestBody SignUpRequest request) {
         try {

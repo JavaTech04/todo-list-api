@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/${api.version}/user")
-@Tag(name = "User controller")
+@Tag(name = "User Controller", description = "Handles operations related to user account management, such as retrieving and updating user information.")
+
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
@@ -25,16 +26,16 @@ public class UserController {
      * Header:  Authorization: Bearer token
      */
     @Operation(
-            summary = "Retrieve User Information",
-            description = "This endpoint retrieves user information based on the Authorization Bearer token provided in the request header. It returns details related to the authenticated user."
+            summary = "Retrieve User Profile",
+            description = "Fetches the profile information of the authenticated user using the Authorization Bearer token provided in the request header."
     )
-    @GetMapping("/my-info")
-    public ResponseData<?> myInfo() {
+    @GetMapping("/profile")
+    public ResponseData<?> profile() {
         try {
             log.info("Retrieving User Information");
-            return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("common.success"), userService.getInfo());
+            return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("common.success"), userService.profile());
         } catch (Exception e) {
-            log.error("errorMessage={}", e.getMessage(), e.getCause());
+            log.error("Error retrieving user information: {}", e.getMessage(), e.getCause());
             return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), Translator.toLocale("common.error"));
         }
     }
@@ -44,17 +45,17 @@ public class UserController {
      * Email in body
      */
     @Operation(
-            summary = "Change User Email",
-            description = "This endpoint allows the authenticated user to update their email address. The new email should be provided in the request body. On success, it returns a confirmation message."
+            summary = "Update User Email",
+            description = "Allows the authenticated user to update their email address. The new email must be provided in the request body. Returns a success message upon successful update."
     )
     @PostMapping("/change-email")
     public ResponseData<?> changeEmail(@RequestBody String email) {
         try {
-            log.info("Changing User Email");
+            log.info("Changing User Email to {}", email);
             userService.changeEmail(email);
             return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("common.success"));
         } catch (Exception e) {
-            log.error("errorMessage={}", e.getMessage(), e.getCause());
+            log.error("Error changing email: {}", e.getMessage(), e.getCause());
             return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), Translator.toLocale("common.error"));
         }
     }
@@ -65,7 +66,7 @@ public class UserController {
      */
     @Operation(
             summary = "Change User Password",
-            description = "This endpoint allows the user to update their password. The request body must include the current password and the new password. On success, it returns a confirmation message."
+            description = "Allows the authenticated user to change their password. The request body must include the current password and the new password. Returns a success message upon successful update."
     )
     @PostMapping("/change-password")
     public ResponseData<?> changePassword(@Valid @RequestBody PasswordRequest password) {
@@ -74,9 +75,8 @@ public class UserController {
             userService.changePassword(password);
             return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("common.success"));
         } catch (Exception e) {
-            log.error("errorMessage={}", e.getMessage(), e.getCause());
+            log.error("Error changing password: {}", e.getMessage(), e.getCause());
             return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), Translator.toLocale("common.error"));
         }
-
     }
 }
