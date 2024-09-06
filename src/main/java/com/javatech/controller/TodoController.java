@@ -4,6 +4,7 @@ import com.javatech.config.Translator;
 import com.javatech.dto.requests.TodoRequest;
 import com.javatech.dto.response.ResponseData;
 import com.javatech.dto.response.ResponseError;
+import com.javatech.exceptions.EntityNotFoundException;
 import com.javatech.service.TodoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,6 +13,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/${api.version}/todo")
 @Tag(name = "Todo Controller", description = "Handles operations related to todo items, including creating, updating, retrieving, and deleting todo items.")
+@Validated
 public class TodoController {
     private final TodoService todoService;
 
@@ -35,13 +38,8 @@ public class TodoController {
     )
     @PostMapping
     ResponseData<?> createTodo(@Valid @RequestBody TodoRequest request) {
-        try {
-            log.info("Creating todo item: {}", request);
-            return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("todo.success.createTodo"), this.todoService.createTodo(request));
-        } catch (Exception e) {
-            log.error("Error creating todo item: request={}, errorMessage={}", request, e.getMessage(), e);
-            return new ResponseError<>(HttpStatus.OK.value(), Translator.toLocale("todo.error.createTodo"));
-        }
+        log.info("Creating todo item: {}", request);
+        return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("todo.success.createTodo"), this.todoService.createTodo(request));
     }
 
     /**
@@ -58,14 +56,9 @@ public class TodoController {
     )
     @PutMapping("/{id}")
     ResponseData<?> updateTodo(@PathVariable @Min(1) long id, @Valid @RequestBody TodoRequest request) {
-        try {
-            log.info("Updating todo item with id={} and request={}", id, request);
-            this.todoService.updateTodo(id, request);
-            return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("todo.success.updateTodo"));
-        } catch (Exception e) {
-            log.error("Error updating todo item: id={}, request={}, errorMessage={}", id, request, e.getMessage(), e);
-            return new ResponseError<>(HttpStatus.OK.value(), Translator.toLocale("todo.error.updateTodo"));
-        }
+        log.info("Updating todo item with id={} and request={}", id, request);
+        this.todoService.updateTodo(id, request);
+        return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("todo.success.updateTodo"));
     }
 
     /**
@@ -77,14 +70,9 @@ public class TodoController {
     )
     @DeleteMapping("/{id}")
     ResponseData<?> deleteTodo(@PathVariable @Min(1) long id) {
-        try {
-            log.info("Deleting todo item with id={}", id);
-            this.todoService.deleteTodo(id);
-            return new ResponseData<>(HttpStatus.NO_CONTENT.value(), Translator.toLocale("todo.success.deleteTodo"));
-        } catch (Exception e) {
-            log.error("Error deleting todo item: id={}, errorMessage={}", id, e.getMessage(), e);
-            return new ResponseError<>(HttpStatus.OK.value(), Translator.toLocale("todo.error.deleteTodo"));
-        }
+        log.info("Deleting todo item with id={}", id);
+        this.todoService.deleteTodo(id);
+        return new ResponseData<>(HttpStatus.NO_CONTENT.value(), Translator.toLocale("todo.success.deleteTodo"));
     }
 
     /**
@@ -95,13 +83,8 @@ public class TodoController {
             description = "Retrieve all todo items associated with a specific todo list. Provide the list ID in the URL path."
     )
     @GetMapping("/list/{listId}")
-    public ResponseData<?> getTodosByList(@PathVariable int listId) {
-        try {
-            log.info("Retrieving todos for list id={}", listId);
-            return new ResponseData<>(HttpStatus.NO_CONTENT.value(), Translator.toLocale("todo.success.getTodosByList"), this.todoService.getTodosByList(listId));
-        } catch (Exception e) {
-            log.error("Error retrieving todos for list id={}, errorMessage={}", listId, e.getMessage(), e);
-            return new ResponseError<>(HttpStatus.OK.value(), Translator.toLocale("todo.error.getTodosByList"));
-        }
+    public ResponseData<?> getTodosByList(@PathVariable @Min(1) int listId) {
+        log.info("Retrieving todos for list id={}", listId);
+        return new ResponseData<>(HttpStatus.NO_CONTENT.value(), Translator.toLocale("todo.success.getTodosByList"), this.todoService.getTodosByList(listId));
     }
 }

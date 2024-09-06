@@ -36,13 +36,8 @@ public class TodoListController {
             @RequestParam(name = "pageNumber", defaultValue = "0", required = false) int pageNumber,
             @RequestParam(name = "pageSize", defaultValue = "10", required = false) @Min(5) int pageSize
     ) {
-        try {
-            log.info("Retrieving todo lists: pageNumber={}, pageSize={}", pageNumber, pageSize);
-            return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("todo-lists.success.getAllTodoLists"), this.todoListService.getAllTodoLists(pageNumber, pageSize));
-        } catch (Exception e) {
-            log.error("Error retrieving todo lists: pageNumber={}, pageSize={}, errorMessage={}", pageNumber, pageSize, e.getMessage(), e);
-            return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), Translator.toLocale("todo-lists.error.getAllTodoLists"));
-        }
+        log.info("Retrieving todo lists: pageNumber={}, pageSize={}", pageNumber, pageSize);
+        return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("todo-lists.success.getAllTodoLists"), this.todoListService.getAllTodoLists(pageNumber, pageSize));
     }
 
     /**
@@ -54,17 +49,12 @@ public class TodoListController {
     )
     @PostMapping
     ResponseData<?> createTodoList(@RequestBody @Length(min = 3, max = 100) String listName) {
-        try {
-            log.info("Creating a new todo list with name={}", listName);
-            return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("todo-lists.success.createTodoList"), this.todoListService.createTodoList(listName));
-        } catch (Exception e) {
-            log.error("Error creating todo list: listName={}, errorMessage={}", listName, e.getMessage(), e);
-            return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), Translator.toLocale("todo-lists.error.createTodoList"));
-        }
+        log.info("Creating a new todo list with name={}", listName);
+        return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("todo-lists.success.createTodoList"), this.todoListService.createTodoList(listName));
     }
 
     /**
-     * id: min 1
+     * id: min 1 (number)
      * listName: length between 3 and 100
      */
     @Operation(
@@ -76,18 +66,13 @@ public class TodoListController {
             @PathVariable @Min(1) long id,
             @RequestBody @Length(min = 3, max = 100) String listName
     ) {
-        try {
-            log.info("Updating todo list with id={} and new name={}", id, listName);
-            this.todoListService.updateTodoList(id, listName);
-            return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("todo-lists.success.updateTodoList"));
-        } catch (Exception e) {
-            log.error("Error updating todo list: id={}, listName={}, errorMessage={}", id, listName, e.getMessage(), e);
-            return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), Translator.toLocale("todo-lists.error.updateTodoList"));
-        }
+        log.info("Updating todo list with id={} and new name={}", id, listName);
+        this.todoListService.updateTodoList(id, listName);
+        return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("todo-lists.success.updateTodoList"));
     }
 
     /**
-     * id: min 1s
+     * id: min 1 (number)
      */
     @Operation(
             summary = "Delete Todo List",
@@ -95,13 +80,8 @@ public class TodoListController {
     )
     @DeleteMapping("/{id}")
     ResponseData<?> deleteTodoList(@PathVariable @Min(1) long id) {
-        try {
-            log.info("Deleting todo list with id={}", id);
-            this.todoListService.deleteTodoList(id);
-            return new ResponseData<>(HttpStatus.NO_CONTENT.value(), Translator.toLocale("todo-lists.success.deleteTodoList"));
-        } catch (Exception e) {
-            log.error("Error deleting todo list: id={}, errorMessage={}", id, e.getMessage(), e);
-            return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), Translator.toLocale("todo-lists.error.deleteTodoList"));
-        }
+        log.info("Deleting todo list with id={}", id);
+        this.todoListService.deleteTodoList(id);
+        return new ResponseData<>(HttpStatus.NO_CONTENT.value(), Translator.toLocale("todo-lists.success.deleteTodoList"));
     }
 }

@@ -16,7 +16,7 @@ public class LocaleResolver extends AcceptHeaderLocaleResolver implements WebMvc
     List<Locale> LOCALES = List.of(new Locale("en"), new Locale("fr"), new Locale("vi"));
 
     @Override
-    public Locale resolveLocale( HttpServletRequest request) {
+    public Locale resolveLocale(HttpServletRequest request) {
         String languageHeader = request.getHeader("Accept-Language");
         return !StringUtils.hasLength(languageHeader)
                 ? Locale.US

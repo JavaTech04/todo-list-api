@@ -3,7 +3,6 @@ package com.javatech.controller;
 import com.javatech.config.Translator;
 import com.javatech.dto.requests.PasswordRequest;
 import com.javatech.dto.response.ResponseData;
-import com.javatech.dto.response.ResponseError;
 import com.javatech.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,13 +30,8 @@ public class UserController {
     )
     @GetMapping("/profile")
     public ResponseData<?> profile() {
-        try {
-            log.info("Retrieving User Information");
-            return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("common.success"), userService.profile());
-        } catch (Exception e) {
-            log.error("Error retrieving user information: {}", e.getMessage(), e.getCause());
-            return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), Translator.toLocale("common.error"));
-        }
+        log.info("Retrieving User Information");
+        return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("common.success"), userService.profile());
     }
 
     /**
@@ -50,14 +44,9 @@ public class UserController {
     )
     @PostMapping("/change-email")
     public ResponseData<?> changeEmail(@RequestBody String email) {
-        try {
-            log.info("Changing User Email to {}", email);
-            userService.changeEmail(email);
-            return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("common.success"));
-        } catch (Exception e) {
-            log.error("Error changing email: {}", e.getMessage(), e.getCause());
-            return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), Translator.toLocale("common.error"));
-        }
+        log.info("Changing User Email to {}", email);
+        userService.changeEmail(email);
+        return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("common.success"));
     }
 
     /**
@@ -70,13 +59,8 @@ public class UserController {
     )
     @PostMapping("/change-password")
     public ResponseData<?> changePassword(@Valid @RequestBody PasswordRequest password) {
-        try {
-            log.info("Changing User Password");
-            userService.changePassword(password);
-            return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("common.success"));
-        } catch (Exception e) {
-            log.error("Error changing password: {}", e.getMessage(), e.getCause());
-            return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), Translator.toLocale("common.error"));
-        }
+        log.info("Changing User Password");
+        userService.changePassword(password);
+        return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("common.success"));
     }
 }

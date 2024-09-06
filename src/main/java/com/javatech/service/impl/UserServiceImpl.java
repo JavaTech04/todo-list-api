@@ -2,6 +2,7 @@ package com.javatech.service.impl;
 
 import com.javatech.dto.requests.PasswordRequest;
 import com.javatech.dto.response.UserResponse;
+import com.javatech.exceptions.EntityNotFoundException;
 import com.javatech.exceptions.InvalidDataException;
 import com.javatech.repository.UserRepository;
 import com.javatech.service.JwtService;
@@ -28,13 +29,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetailsService userDetailsService() {
-        return username -> this.userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+        return username -> this.userRepository.findByUsername(username).orElseThrow(
+                () -> new EntityNotFoundException(String.format("User with username '%s' not found!", username))
+        );
     }
 
     @Override
     public UserResponse profile() {
         String username = this.tokenHeader.getUsername();
-        var user = this.userRepository.findByUsername(username).orElseThrow(() -> new ResolutionException("User not found!"));
+        var user = this.userRepository.findByUsername(username).orElseThrow(
+                () -> new EntityNotFoundException(String.format("User with username '%s' not found!", username))
+        );
         return UserResponse.builder()
                 .email(user.getEmail())
                 .username(username)
@@ -45,7 +50,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void changeEmail(String email) {
         String username = this.tokenHeader.getUsername();
-        var user = this.userRepository.findByUsername(username).orElseThrow(() -> new ResolutionException("User not found!"));
+        var user = this.userRepository.findByUsername(username).orElseThrow(
+                () -> new EntityNotFoundException(String.format("User with username '%s' not found!", username))
+        );
         user.setEmail(email);
         this.userRepository.save(user);
     }
@@ -54,7 +61,9 @@ public class UserServiceImpl implements UserService {
     public void changePassword(PasswordRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String username = this.tokenHeader.getUsername();
-        var user = this.userRepository.findByUsername(username).orElseThrow(() -> new ResolutionException("User not found!"));
+        var user = this.userRepository.findByUsername(username).orElseThrow(
+                () -> new EntityNotFoundException(String.format("User with username '%s' not found!", username))
+        );
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             throw new InvalidDataException("Invalid password!");
         }else if(!request.getNewPassword().equals(request.getConfirmPassword())) {

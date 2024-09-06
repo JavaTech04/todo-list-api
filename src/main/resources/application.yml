@@ -21,11 +21,11 @@ spring:
     serialization:
       indent-output: true
 
-logging:
-  level:
-    root: INFO
-    org.springframework.web: DEBUG
-    org.hibernate: INFO
+#logging:
+#  level:
+#    root: INFO
+#    org.springframework.web: DEBUG
+#    org.hibernate: INFO
 jwt:
   expiryHour: 1
   expiryDay: 14

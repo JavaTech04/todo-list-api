@@ -3,6 +3,7 @@ package com.javatech.service.impl;
 import com.javatech.dto.requests.TodoRequest;
 import com.javatech.dto.response.TodoListResponse;
 import com.javatech.dto.response.TodoResponse;
+import com.javatech.exceptions.EntityNotFoundException;
 import com.javatech.exceptions.ResourceNotFoundException;
 import com.javatech.model.Todo;
 import com.javatech.model.TodoList;
@@ -31,8 +32,12 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public long createTodo(TodoRequest request) {
-        var user = this.userRepository.findByUsername(tokenHeader.getUsername()).orElseThrow(() -> new ResourceNotFoundException("User not found!"));
-        TodoList todoList = this.todoListRepository.findByUser_IdAndId(user.getId(), request.getTodoListId()).orElseThrow(() -> new ResourceNotFoundException("id invalid!"));
+        var user = this.userRepository.findByUsername(tokenHeader.getUsername()).orElseThrow(
+                () -> new EntityNotFoundException(String.format("User with username %s not found", tokenHeader.getUsername()))
+        );
+        TodoList todoList = this.todoListRepository.findByUser_IdAndId(user.getId(), request.getTodoListId()).orElseThrow(
+                () -> new EntityNotFoundException(String.format("TodoList with id %d not found", request.getTodoListId()))
+        );
         return this.todoRepository.save(Todo.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -45,8 +50,12 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public void updateTodo(long id, TodoRequest request) {
-        var user = this.userRepository.findByUsername(tokenHeader.getUsername()).orElseThrow(() -> new ResourceNotFoundException("User not found!"));
-        TodoList todoList = this.todoListRepository.findByUser_IdAndId(user.getId(), request.getTodoListId()).orElseThrow(() -> new ResourceNotFoundException("id invalid!"));
+        var user = this.userRepository.findByUsername(tokenHeader.getUsername()).orElseThrow(
+                () -> new EntityNotFoundException(String.format("User with username %s not found", tokenHeader.getUsername()))
+        );
+        TodoList todoList = this.todoListRepository.findByUser_IdAndId(user.getId(), request.getTodoListId()).orElseThrow(
+                () -> new EntityNotFoundException(String.format("TodoList with id %d not found", request.getTodoListId()))
+        );
         Todo todo = Todo.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -61,15 +70,23 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public void deleteTodo(long id) {
-        var user = this.userRepository.findByUsername(tokenHeader.getUsername()).orElseThrow(() -> new ResourceNotFoundException("User not found!"));
-        Todo todo = this.todoRepository.findByIdAndUser_Id(id, user.getId()).orElseThrow(() -> new ResourceNotFoundException("Todo is not exists!"));
+        var user = this.userRepository.findByUsername(tokenHeader.getUsername()).orElseThrow(
+                () -> new EntityNotFoundException(String.format("User with username %s not found", tokenHeader.getUsername()))
+        );
+        Todo todo = this.todoRepository.findByIdAndUser_Id(id, user.getId()).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Todo with id %d not found", id))
+        );
         this.todoRepository.delete(todo);
     }
 
     @Override
     public TodoListResponse getTodosByList(long listTodoId) {
-        var user = this.userRepository.findByUsername(tokenHeader.getUsername()).orElseThrow(() -> new ResourceNotFoundException("User not found!"));
-        TodoList todoList = this.todoListRepository.findByUser_IdAndId(user.getId(), listTodoId).orElseThrow(() -> new ResourceNotFoundException("id invalid!"));
+        var user = this.userRepository.findByUsername(tokenHeader.getUsername()).orElseThrow(
+                () -> new EntityNotFoundException(String.format("User with username %s not found", tokenHeader.getUsername()))
+        );
+        TodoList todoList = this.todoListRepository.findByUser_IdAndId(user.getId(), listTodoId).orElseThrow(
+                () -> new EntityNotFoundException(String.format("TodoList with id %d not found", listTodoId))
+        );
         List<TodoResponse> todoResponseList = todoList.getTodos().stream().map(this::convertToResponse).toList();
         return TodoListResponse.builder()
                 .id(todoList.getId())

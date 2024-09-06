@@ -36,13 +36,8 @@ public class AuthenticationController {
     )
     @PostMapping("/access")
     public ResponseData<?> access(@Valid @RequestBody SignInRequest request) {
-        try {
-            log.info("Request access username={}", request.getUsername());
-            return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("auth.success.access"), authenticationService.authenticate(request));
-        } catch (Exception e) {
-            log.error("errorMessage={}", e.getMessage(), e.getCause());
-            return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), Translator.toLocale("auth.error.access"));
-        }
+        log.info("Request access username={}", request.getUsername());
+        return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("auth.success.access"), authenticationService.authenticate(request));
     }
 
     /**
@@ -54,13 +49,8 @@ public class AuthenticationController {
     )
     @PostMapping("/refresh")
     public ResponseData<?> refresh(HttpServletRequest request) {
-        try {
-            log.info("Request refresh token");
-            return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("auth.success.refresh"), authenticationService.refresh(request));
-        } catch (Exception e) {
-            log.error("errorMessage={}", e.getMessage(), e.getCause());
-            return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), Translator.toLocale("auth.error.refresh"));
-        }
+        log.info("Request refresh token");
+        return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("auth.success.refresh"), authenticationService.refresh(request));
     }
 
     /**
@@ -72,14 +62,9 @@ public class AuthenticationController {
     )
     @PostMapping("/remove")
     public ResponseData<?> logout(HttpServletRequest request) {
-        try {
-            log.info("Request remove token");
-            authenticationService.logout(request);
-            return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("auth.success.remove"));
-        } catch (Exception e) {
-            log.error("errorMessage={}", e.getMessage(), e.getCause());
-            return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), Translator.toLocale("auth.error.remove"));
-        }
+        log.info("Request remove token");
+        authenticationService.logout(request);
+        return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("auth.success.remove"));
     }
 
     /**
@@ -91,12 +76,7 @@ public class AuthenticationController {
     )
     @PostMapping("/sign-up")
     public ResponseData<?> signup(@Valid @RequestBody SignUpRequest request) {
-        try {
-            log.info("Request signup username={}", request.getUsername());
-            return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("auth.success.signup"), authenticationService.signUp(request));
-        } catch (Exception e) {
-            log.error("errorMessage={}", e.getMessage(), e.getCause());
-            return new ResponseError<>(HttpStatus.BAD_REQUEST.value(), Translator.toLocale("auth.error.signup"));
-        }
+        log.info("Request signup username={}", request.getUsername());
+        return new ResponseData<>(HttpStatus.OK.value(), Translator.toLocale("auth.success.signup"), authenticationService.signUp(request));
     }
 }

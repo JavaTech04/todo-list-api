@@ -33,7 +33,7 @@ public class PreFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         final String authorization = request.getHeader(AUTHORIZATION);
         if (StringUtils.isBlank(authorization) || !authorization.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);

@@ -2,8 +2,10 @@ package com.javatech.exceptions;
 
 import com.javatech.dto.response.ExceptionResponse;
 import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,7 +19,7 @@ import java.util.Date;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({MethodArgumentNotValidException.class, InvalidDataException.class, BadCredentialsException.class, ResourceNotFoundException.class})
+    @ExceptionHandler({MethodArgumentNotValidException.class, HttpMessageNotReadableException.class, ConstraintViolationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionResponse handleValidException(Exception ex, WebRequest request) {
         ExceptionResponse response = new ExceptionResponse();
@@ -31,12 +33,19 @@ public class GlobalExceptionHandler {
             int end = message.lastIndexOf("]");
             message = message.substring(start + 1, end - 1);
             response.setError("Payload invalid");
-        } else if (ex instanceof InvalidDataException) {
-            response.setError("Payload invalid");
-        } else if (ex instanceof BadCredentialsException) {
-            response.setError("Bad credentials");
-        }else if (ex instanceof ResourceNotFoundException) {
-            response.setError("Resource not found");
+        } else if (ex instanceof ConstraintViolationException) {
+            message = message.substring(message.indexOf(" ") + 1);
+            response.setError("PathVariable invalid");
+        } else if (ex instanceof HttpMessageNotReadableException) {
+            int startIndex = message.indexOf("JSON parse error: ");
+            if (startIndex != -1) {
+                String detailedMessage = message.substring(startIndex + "JSON parse error: ".length());
+                int errorStart = detailedMessage.indexOf("Failed to parse Date value '");
+                int errorEnd = detailedMessage.indexOf("'", errorStart + "Failed to parse Date value '".length());
+                message = detailedMessage.substring(errorStart, errorEnd);
+                response.setError("Invalid payload format");
+
+            }
         }
         response.setMessage(message);
         return response;
@@ -54,6 +63,22 @@ public class GlobalExceptionHandler {
         if (ex instanceof ExpiredJwtException) {
             response.setError("Token expired");
 
+        }
+        response.setMessage(message);
+        return response;
+    }
+
+    @ExceptionHandler({EntityNotFoundException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ExceptionResponse handleEntityNotFound(Exception ex, WebRequest request) {
+        log.info("============== handleEntityNotFound ==============");
+        ExceptionResponse response = new ExceptionResponse();
+        response.setTimestamp(new Date());
+        response.setStatus(HttpStatus.NOT_FOUND.value());
+        response.setPath(request.getDescription(false).replace("uri=", ""));
+        String message = ex.getMessage();
+        if (ex instanceof EntityNotFoundException) {
+            response.setError("Entity not found");
         }
         response.setMessage(message);
         return response;
