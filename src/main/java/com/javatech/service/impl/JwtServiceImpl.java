@@ -59,7 +59,7 @@ public class JwtServiceImpl implements JwtService {
         return (username.equals(user.getUsername()) && !isTokenExpired(token, type));
     }
 
-    private String generateToken(Map<String, Object> claims, UserDetails user){
+    private String generateToken(Map<String, Object> claims, UserDetails user) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(user.getUsername())

@@ -1,12 +1,10 @@
 package com.javatech.exceptions;
 
 import com.javatech.dto.response.ExceptionResponse;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -46,23 +44,6 @@ public class GlobalExceptionHandler {
                 response.setError("Invalid payload format");
 
             }
-        }
-        response.setMessage(message);
-        return response;
-    }
-
-    @ExceptionHandler({ExpiredJwtException.class})
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ExceptionResponse handleJWT(Exception ex, WebRequest request) {
-        ExceptionResponse response = new ExceptionResponse();
-        response.setTimestamp(new Date());
-        response.setStatus(HttpStatus.FORBIDDEN.value());
-        response.setPath(request.getDescription(false).replace("uri=", ""));
-
-        String message = ex.getMessage();
-        if (ex instanceof ExpiredJwtException) {
-            response.setError("Token expired");
-
         }
         response.setMessage(message);
         return response;

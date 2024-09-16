@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/${api.version}/user")
 @Tag(name = "User Controller", description = "Handles operations related to user account management, such as retrieving and updating user information.")
-
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {

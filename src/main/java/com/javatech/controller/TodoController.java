@@ -3,8 +3,6 @@ package com.javatech.controller;
 import com.javatech.config.Translator;
 import com.javatech.dto.requests.TodoRequest;
 import com.javatech.dto.response.ResponseData;
-import com.javatech.dto.response.ResponseError;
-import com.javatech.exceptions.EntityNotFoundException;
 import com.javatech.service.TodoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

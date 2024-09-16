@@ -6,6 +6,7 @@ import com.javatech.dto.requests.SignUpRequest;
 import com.javatech.dto.response.TokenResponse;
 import com.javatech.exceptions.InvalidDataException;
 import com.javatech.model.User;
+import com.javatech.model.redis_model.Token;
 import com.javatech.repository.UserRepository;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import static com.javatech.utils.TokenType.ACCESS_TOKEN;
 import static com.javatech.utils.TokenType.REFRESH_TOKEN;
 import static com.javatech.utils.UserRole.USER;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -37,12 +39,19 @@ public class AuthenticationService {
 
     private final PasswordEncoder passwordEncoder;
 
+    private final TokenService tokenService;
+
     public TokenResponse authenticate(SignInRequest signInRequest) {
         this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signInRequest.getUsername(), signInRequest.getPassword()));
         var user = this.userRepository.findByUsername(signInRequest.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Username or password incorrect"));
         String access_token = this.jwtService.generateToken(user);
         String refresh_token = this.jwtService.generateRefreshToken(user);
 
+        this.tokenService.saveToken(Token.builder()
+                .id(user.getUsername())
+                .accessToken(access_token)
+                .refreshToken(refresh_token)
+                .build());
         return TokenResponse.builder()
                 .accessToken(access_token)
                 .refreshToken(refresh_token)
@@ -58,7 +67,11 @@ public class AuthenticationService {
         final String username = this.jwtService.extractUsername(refresh_token, REFRESH_TOKEN);
         User user = this.userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
         String access_token = this.jwtService.generateToken(user);
-
+        this.tokenService.saveToken(Token.builder()
+                .id(user.getUsername())
+                .accessToken(access_token)
+                .refreshToken(refresh_token)
+                .build());
         return TokenResponse.builder()
                 .accessToken(access_token)
                 .refreshToken(refresh_token)
@@ -67,10 +80,13 @@ public class AuthenticationService {
     }
 
     public void logout(HttpServletRequest request) {
-        String refresh_token = request.getHeader(AUTHORIZATION);
-        if (StringUtils.isBlank(refresh_token)) {
+        String authorization = request.getHeader(AUTHORIZATION);
+        if (StringUtils.isBlank(authorization)) {
             throw new InvalidDataAccessApiUsageException("Token must be not blank!");
         }
+        final String token = authorization.substring("Bearer ".length());
+        String username = this.jwtService.extractUsername(token, ACCESS_TOKEN);
+        this.tokenService.deleteToken(username);
         log.info("========== logout successfully ==========");
     }
 
