@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -49,7 +50,7 @@ public class GlobalExceptionHandler {
         return response;
     }
 
-    @ExceptionHandler({EntityNotFoundException.class})
+    @ExceptionHandler({EntityNotFoundException.class, InternalAuthenticationServiceException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ExceptionResponse handleEntityNotFound(Exception ex, WebRequest request) {
         log.info("============== handleEntityNotFound ==============");
@@ -60,6 +61,9 @@ public class GlobalExceptionHandler {
         String message = ex.getMessage();
         if (ex instanceof EntityNotFoundException) {
             response.setError("Entity not found");
+        }if(ex instanceof InternalAuthenticationServiceException) {
+            response.setError("Internal authentication service error");
+            message = "Username or password incorrect";
         }
         response.setMessage(message);
         return response;
